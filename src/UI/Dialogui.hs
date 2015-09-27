@@ -2,6 +2,8 @@ module UI.Dialogui (
   Output(..), Input, UI
   , Action(..), Controller(..), Result, ScrollTarget(..)
 
+  , voidController
+
   , (<>)
   , quit, clear, setInput, setState
   , write, writeLn
@@ -50,6 +52,13 @@ data State a b = State { finished :: Bool
                        , uiState  :: a
                        , ctlState :: b
                        }
+
+
+voidController :: Monad m => Controller m ()
+voidController = Controller { initialize  =                 return ()
+                            , finalize    = const $         return ()
+                            , communicate = const $ const $ return [] }  
+
 
 -- "Words" of the controller eDSL
 
