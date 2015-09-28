@@ -2,7 +2,7 @@ module UI.Dialogui (
   Output(..), Input, UI
   , Action(..), Controller(..), Result, ScrollTarget(..)
 
-  , voidController
+  , voidController, interact
 
   , (<>)
   , quit, clear, setInput, setState
@@ -15,6 +15,7 @@ module UI.Dialogui (
   ) where
 
 import           Data.Monoid ((<>))
+import           Prelude     hiding (interact)
 
 
 data Output t = Output { writeTo     :: String -> t
@@ -54,11 +55,17 @@ data State a b = State { finished :: Bool
                        }
 
 
+-- | Controller which does nothing and have no state.
+--   This is a good template for the simple effectful controllers.
 voidController :: Monad m => Controller m ()
 voidController = Controller { initialize  =                 return ()
                             , finalize    = const $         return ()
-                            , communicate = const $ const $ return [] }  
+                            , communicate = const $ const $ return [] }
 
+
+-- | Analogue of ~Prelude.interact~ but runnable with UI
+interact :: (String -> String) -> Controller IO ()
+interact f = voidController { communicate = const $ \x -> return $ write $ f x }
 
 -- "Words" of the controller eDSL
 
@@ -107,4 +114,3 @@ finish      ::             State a b -> State a b
 modUIState  f s = s { uiState  = f (uiState  s) }
 modCtlState f s = s { ctlState = f (ctlState s) }
 finish        s = s { finished = True }
-
