@@ -8,11 +8,11 @@ At the moment two "backends" of UI are available:
 
 1. **TUI** (Text User Interface):
 
-<img src="./examples/hecho-tui.png" alt="TUI">
+  <img src="./examples/hecho-tui.png" alt="TUI">
 
-2. **Tk**-based **GUI**:
+2. [Tk](https://en.wikipedia.org/wiki/Tk_%28software%29)-based **GUI**:
 
-<img src="./examples/hecho-tk.png" alt="GUI">
+  <img src="./examples/hecho-tk.png" alt="GUI">
 
 ### Installation
 
