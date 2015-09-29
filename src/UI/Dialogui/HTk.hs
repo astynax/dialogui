@@ -1,4 +1,5 @@
 {-# LANGUAGE LambdaCase #-}
+-- | Simple <https://en.wikipedia.org/wiki/Tk_%28software%29 Tk>-based GUI.
 
 module UI.Dialogui.HTk (runGUI) where
 
@@ -10,7 +11,12 @@ import qualified HTk.Toplevel.HTk as H
 import           UI.Dialogui      hiding (perform)
 
 
-runGUI :: String -> [Action a] -> UI a
+{- | Returns the 'UI.Dialogui.UI', which shows the window
+and performs some actions (setup) just after start.
+-}
+runGUI :: String      -- ^ Window title
+       -> [Action a]  -- ^ Setup
+       -> UI a        -- ^ Resulting UI
 runGUI title setup ctl = do
   main <- initHTk [ text    title
                   , minSize (300, 100)

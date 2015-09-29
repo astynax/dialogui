@@ -1,4 +1,18 @@
 {-# LANGUAGE LambdaCase #-}
+{- | The __TUI__ (__T__ext __U__ser __I__nterface) works like the
+command line of the OS-shell or GHCi. This example runs a
+'UI.Dialogui.voidController' using TUI:
+
+>>> let setup = writeLn "Hello" <> writeLn "World"
+>>> runTUI setup voidController
+Hello
+World
+> ^D
+Bye!
+>>>
+
+(As you can see, app was stopped by pressing the @Ctrl+D@)
+-}
 
 module UI.Dialogui.TUI (runTUI) where
 
@@ -18,7 +32,11 @@ tuiOutput = Output { writeTo     = \msg -> modUIState (++ msg)
                    }
 
 
-runTUI :: [Action a] -> UI a
+{- | Returns the 'UI.Dialogui.UI', which preforms some setup (list of Action's)
+just before starting the interaction with User.
+-}
+runTUI :: [Action a]  -- ^ Setup
+       -> UI a        -- ^ Resulting UI
 runTUI setup ctl =
   loop . perform tuiOutput setup . state "" =<< initialize ctl
   where
