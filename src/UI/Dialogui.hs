@@ -9,11 +9,15 @@ module UI.Dialogui (
   -- ** Types
   Controller(..), Action(..), Result, ScrollTarget(..),
 
-  -- ** eDSL functions
-  (<>),
-  quit, clear, setInput, setState,
+
+  -- ** eDSL
+
+  -- $example
+  quit, clear,
   write, writeLn,
+  setInput, setState,
   scrollToBegin, scrollToEnd,
+  (<>),
 
   -- ** Other functions
   voidController, interact,
@@ -21,9 +25,10 @@ module UI.Dialogui (
   -- * Simple pure state
 
   -- ** State type
-  State(finished, ctlState, uiState, uiInput),
+  State(),
 
   -- ** Getters and modifiers
+  finished, ctlState, uiState, uiInput,
   state, perform, finish,
   modUIState, modCtlState
   ) where
@@ -41,10 +46,10 @@ as 'Prelude.IO'-action.
 -}
 type UI a = Controller IO a -> IO ()
 
--- | Output widget position to scroll to
+-- | Position to scroll the ouput widget to.
 data ScrollTarget = BeginOfText | EndOfText
 
--- | Controller's action
+-- | Controller's action.
 data Action a = Write String
               | ClearOutput
               | SetInput String
@@ -52,7 +57,7 @@ data Action a = Write String
               | ScrollTo ScrollTarget
               | Quit
 
--- | User input
+-- | User input.
 type Input = String
 
 -- | Result of evaluation of the user's 'Input' by 'Controller'.
@@ -63,13 +68,13 @@ and producing some 'Result'.
 -}
 data Monad m => Controller m a =
   Controller { initialize  :: m a
-               -- ^ Computation producing the initial state
+               -- ^ Computation producing the initial state,
              , finalize    :: a -> m ()
                -- ^ Computation using the final state
-               -- to do something before quit
+               -- to do something before quit,
              , communicate :: a -> Input -> m (Result a)
                -- ^ Computation producing a couple of actions
-               -- as reaction to the user input
+               -- as reaction to the user input.
              }
 
 
@@ -78,13 +83,15 @@ and the state of 'Controller'.
 -}
 data State a b =
   State { finished :: Bool
-          -- ^ "Was execution finished?"
+          -- ^ Returns @True@ if controller returned a 'quit'
+          -- and 'UI' must be stopped.
         , uiInput  :: Maybe String
-          -- ^ If @Just x@ then value of input widget will be set to x
+          -- ^ Returns @Just x@ if value of the UI's input widget
+          -- must be set to @x@.
         , uiState  :: a
-          -- ^ New state of 'UI'
+          -- ^ Returns new state of 'UI'
         , ctlState :: b
-          -- ^ New state of 'Controller'
+          -- ^ Returns new state of 'Controller'
         }
 
 
@@ -102,20 +109,42 @@ interact f = voidController { communicate = const $ \x -> return $ write $ f x }
 
 -- "Words" of the controller eDSL
 
-quit, clear :: Result a
+{- $example Example:
+
+@
+answer :: Input -> Result a
+answer []   = quit
+answer name = clearOutput
+              <> write "Hello, " <> write name <> writeLn "!"
+              <> scrollToEnd
+              <> setInput ""
+@
+
+-}
+
+quit, clear, scrollToBegin, scrollToEnd :: Result a
+write, writeLn, setInput :: String -> Result a
+setState :: a -> Result a
+
+-- | Commands 'UI' to quit.
 quit     = [Quit]
+-- | Commands 'UI' to clear the output.
 clear    = [ClearOutput]
 
-write, writeLn, setInput :: String -> Result a
+-- | Commands 'UI' to write some string to the output.
 write    = (:[]) . Write
+-- | Commands 'UI' to write some string to the output and end the line.
 writeLn  = (:[]) . Write . (++ "\n")
+
+-- | Commands 'UI' to set value of the input widget.
 setInput = (:[]) . SetInput
 
-setState :: a -> Result a
+-- | Commands 'UI' to set value of the Controller state.
 setState = (:[]) . SetState
 
-scrollToBegin, scrollToEnd :: Result a
+-- | Commands 'UI' to scroll the output widget to the begin of text.
 scrollToBegin = [ScrollTo BeginOfText]
+-- | Commands 'UI' to scroll the output widget to the end of text.
 scrollToEnd   = [ScrollTo EndOfText]
 
 
