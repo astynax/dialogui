@@ -18,7 +18,7 @@ tuiOutput = Output { writeTo     = \msg -> modUIState (++ msg)
                    }
 
 
-runTUI :: Show a => [Action a] -> UI a
+runTUI :: [Action a] -> UI a
 runTUI setup ctl =
   loop . perform tuiOutput setup . state "" =<< initialize ctl
   where
@@ -47,4 +47,3 @@ getInput = catchIOError
            (\e -> if isEOFError e
                   then return Nothing
                   else ioError e)
-
