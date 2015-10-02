@@ -19,10 +19,8 @@ flag buildExamples
 
 library
   exposed-modules:     UI.Dialogui,
-                       UI.Dialogui.TUI,
-                       UI.Dialogui.HTk
-  build-depends:       base >= 4.7 && < 5,
-                       uni-htk
+                       UI.Dialogui.TUI
+  build-depends:       base >= 4.7 && < 5
   hs-source-dirs:      src
   default-language:    Haskell2010
   ghc-options:         -Wall
@@ -37,17 +35,3 @@ executable hecho
                        dialogui
   else
     buildable:         False
-
-executable hecho-tk
-  main-is:             Echo.hs
-  hs-source-dirs:      examples
-  default-language:    Haskell2010
-  ghc-options:         -Wall
-  if flag(buildExamples)
-    cpp-options:       -DTK_GUI
-    build-depends:     base >= 4.7 && < 5,
-                       dialogui,
-                       uni-htk
-  else
-    buildable:         False
-

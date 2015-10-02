@@ -3,23 +3,13 @@
 module Main where
 
 import           UI.Dialogui
-# ifdef TK_GUI
-import           UI.Dialogui.HTk
-# else
 import           UI.Dialogui.TUI
-# endif
 
 
 main :: IO ()
 main =
-  let setup   = writeLn "Echo service is ready!"
-      runWith =
-# ifdef TK_GUI
-        runGUI "Echo"
-# else
-        runTUI
-# endif
-  in  runWith setup echo
+  let setup = writeLn "Echo service is ready!"
+  in  runTUI setup echo
 
 
 echo :: (Monad m) => Controller m Int
@@ -49,4 +39,3 @@ echo = Controller { initialize  = return 1
                          , " \":r\" to reset state"
                          , " <msg> to see an echo" ]
     clearInput = setInput ""
-
