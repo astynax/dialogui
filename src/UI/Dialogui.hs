@@ -66,7 +66,7 @@ type Result a = [Action a]
 {- | Encapsulates the computation, dealing with 'Input'
 and producing some 'Result'.
 -}
-data Monad m => Controller m a =
+data Controller m a =
   Controller { initialize  :: m a
                -- ^ Computation producing the initial state,
              , finalize    :: a -> m ()
