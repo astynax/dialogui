@@ -105,7 +105,8 @@ voidController = Controller { initialize  =                 return ()
 
 -- | Analogue of the good old 'Prelude.interact' but runnable with 'UI'.
 interact :: (String -> String) -> Controller IO ()
-interact f = voidController { communicate = const $ \x -> return $ write $ f x }
+interact f = voidController { communicate = const $ \x ->
+                               return $ write (f x) <> setInput "" }
 
 -- "Words" of the controller eDSL
 
