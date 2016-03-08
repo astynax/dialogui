@@ -26,23 +26,28 @@ type TUIState a = State String a
 
 
 tuiOutput :: Output (TUIState a -> TUIState a)
-tuiOutput = Output { writeTo     = \msg -> modUIState (++ msg)
-                   , clearOutput =         modUIState (const [])
-                   , scrollTo    = const id -- TUI can't scroll
-                   }
+tuiOutput =
+  Output
+  { writeTo = \msg -> modUIState (++ msg)
+  , clearOutput = modUIState (const [])
+  , scrollTo = const id  -- TUI can't scroll
+  }
 
 
 {- | Returns the 'UI.Dialogui.UI', which preforms some setup (list of Action's)
 just before starting the interaction with User.
 -}
-runTUI :: [Action a]  -- ^ Setup
-       -> UI a        -- ^ Resulting UI
+runTUI
+  :: [Action a]  -- ^ Setup
+  -> UI a  -- ^ Resulting UI
 runTUI setup ctl =
   loop . perform tuiOutput setup . state "" =<< initialize ctl
   where
     loop s
-      | finished s = finalize ctl (ctlState s)
-                     >> putStrLn "\nBye!"
+      | finished s =
+        finalize ctl (ctlState s)
+        >> putStrLn "\nBye!"
+
       | otherwise = do
         putStr (uiState s)
 
@@ -60,8 +65,10 @@ runTUI setup ctl =
 
 
 getInput :: IO (Maybe String)
-getInput = catchIOError
-           (putStr "> " >> hFlush stdout >> Just <$> getLine)
-           (\e -> if isEOFError e
-                  then return Nothing
-                  else ioError e)
+getInput =
+  catchIOError
+  (putStr "> " >> hFlush stdout >> Just <$> getLine)
+  $ \e ->
+    if isEOFError e
+    then return Nothing
+    else ioError e
